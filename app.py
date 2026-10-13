@@ -24,8 +24,20 @@ cities = ['Hyderabad', 'Bangalore', 'Mumbai', 'Indore', 'Kolkata', 'Delhi',
 # -----------------------------
 # LOAD MODEL
 # -----------------------------
-pipe = pickle.load(open('pipe.pkl', 'rb'))
+import os
+import gzip
+import pickle
+import streamlit as st
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "pipe.pkl.gz")
+
+if not os.path.exists(MODEL_PATH):
+    st.error("Model file pipe.pkl.gz not found.")
+    st.stop()
+
+with gzip.open(MODEL_PATH, "rb") as file:
+    pipe = pickle.load(file)
 # -----------------------------
 # UI
 # -----------------------------
@@ -107,6 +119,7 @@ if st.button('Predict Probability'):
     input_df = pd.DataFrame({
         'batting_team': [batting_team],
         'bowling_team': [bowling_team],
+        
         'city': [selected_city],
         'runs_left': [runs_left],
         'balls_left': [balls_left],
